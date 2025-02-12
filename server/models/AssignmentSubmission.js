@@ -12,17 +12,40 @@ const assignmentSubmissionSchema = new mongoose.Schema({
     required: true
   },
   answers: [{
-    questionIndex: Number,
-    selectedOption: Number
+    questionIndex: {
+      type: Number,
+      required: true
+    },
+    selectedOption: {
+      type: Number,
+      required: true
+    }
   }],
   score: {
     type: Number,
-    required: true
+    required: true,
+    min: 0,
+    max: 100
   },
   submittedAt: {
     type: Date,
     default: Date.now
+  },
+  timeSpent: {
+    type: Number, // in minutes
+    default: 0
+  },
+  status: {
+    type: String,
+    enum: ['submitted', 'graded', 'late'],
+    default: 'submitted'
   }
 });
+
+// Compound index for faster queries
+assignmentSubmissionSchema.index({ assignmentId: 1, userId: 1 }, { unique: true });
+
+// Index for finding all submissions by a user
+assignmentSubmissionSchema.index({ userId: 1, submittedAt: -1 });
 
 export default mongoose.model('AssignmentSubmission', assignmentSubmissionSchema);

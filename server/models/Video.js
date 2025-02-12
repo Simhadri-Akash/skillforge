@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+
 const videoSchema = new mongoose.Schema({
   courseId: {
     type: Number,
@@ -22,33 +23,39 @@ const videoSchema = new mongoose.Schema({
     trim: true
   },
   duration: {
-    type: Number, // in seconds
+    type: Number,
     required: true,
     min: 1,
-    max: 3600, // Maximum 1 hour (3600 seconds)
-    validate: {
-      validator: function(v) {
-        return Number.isInteger(v) && v > 0 && v <= 3600;
-      },
-      message: 'Duration must be between 1 second and 1 hour (3600 seconds)'
-    }
+    max: 3600
   },
   resolution: {
     type: String,
     enum: ['720p', '1080p', '1440p', '2160p'],
     default: '1080p'
   },
+  sectionId: {
+    type: String,
+    required: true,
+    ref: 'Section'
+  },
   order: {
     type: Number,
     required: true
   },
+  isProcessed: {
+    type: Boolean,
+    default: false
+  },
+  thumbnailUrl: String,
+  size: Number, // in bytes
+  format: String,
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-// Format duration for display (converts seconds to HH:MM:SS)
+// Format duration for display
 videoSchema.methods.formatDuration = function() {
   const hours = Math.floor(this.duration / 3600);
   const minutes = Math.floor((this.duration % 3600) / 60);
@@ -63,5 +70,8 @@ videoSchema.methods.formatDuration = function() {
 
 // Ensure videos are ordered within a course
 videoSchema.index({ courseId: 1, order: 1 });
+
+// Add text index for search
+videoSchema.index({ title: 'text', description: 'text' });
 
 export default mongoose.model('Video', videoSchema);
