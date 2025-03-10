@@ -6,6 +6,16 @@ import User from '../models/User.js';
 
 const router = express.Router();
 
+// Get total assignments count
+router.get('/count', auth, async (req, res) => {
+  try {
+    const count = await Assignment.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Create assignment (teacher only)
 router.post('/', auth, async (req, res) => {
   try {
