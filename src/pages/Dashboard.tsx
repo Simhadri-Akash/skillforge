@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BookOpen, Clock, Award, BarChart, Calendar } from 'lucide-react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
